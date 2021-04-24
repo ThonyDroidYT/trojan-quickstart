@@ -1,0 +1,130 @@
+#!/bin/bash
+#16/04/21
+clear
+
+# Funcoes Globais
+msg () {
+local colors="/etc/new-adm-color"
+if [[ ! -e $colors ]]; then
+COLOR[0]='\033[1;37m' #BRAN='\033[1;37m'
+COLOR[1]='\e[31m' #VERMELHO='\e[31m'
+COLOR[2]='\e[32m' #VERDE='\e[32m'
+COLOR[3]='\e[33m' #AMARELO='\e[33m'
+COLOR[4]='\e[34m' #AZUL='\e[34m'
+COLOR[5]='\e[91m' #MAGENTA='\e[35m'
+COLOR[6]='\033[1;97m' #MAG='\033[1;36m'
+else
+local COL=0
+for number in $(cat $colors); do
+case $number in
+1)COLOR[$COL]='\033[1;37m';;
+2)COLOR[$COL]='\e[31m';;
+3)COLOR[$COL]='\e[32m';;
+4)COLOR[$COL]='\e[33m';;
+5)COLOR[$COL]='\e[34m';;
+6)COLOR[$COL]='\e[35m';;
+7)COLOR[$COL]='\033[1;36m';;
+esac
+let COL++
+done
+fi
+NEGRITO='\e[1m'
+SEMCOR='\e[0m'
+ case $1 in
+  -ne)cor="${COLOR[1]}${NEGRITO}" && echo -ne "${cor}${2}${SEMCOR}";;
+  -ama)cor="${COLOR[3]}${NEGRITO}" && echo -e "${cor}${2}${SEMCOR}";;
+  -verm)cor="${COLOR[3]}${NEGRITO}[!] ${COLOR[1]}" && echo -e "${cor}${2}${SEMCOR}";;
+  -verm2)cor="${COLOR[1]}${NEGRITO}" && echo -e "${cor}${2}${SEMCOR}";;
+  -azu)cor="${COLOR[6]}${NEGRITO}" && echo -e "${cor}${2}${SEMCOR}";;
+  -verd)cor="${COLOR[2]}${NEGRITO}" && echo -e "${cor}${2}${SEMCOR}";;
+  -bra)cor="${COLOR[0]}${SEMCOR}" && echo -e "${cor}${2}${SEMCOR}";;
+  "-bar2"|"-bar")cor="${COLOR[2]}=====================================================" && echo -e "${SEMCOR}${cor}${SEMCOR}";;
+ esac
+
+#instalador trojan
+intalltrojan () {
+apt install python3-pip -y 
+sudo bash -c "$(wget -O- https://raw.githubusercontent.com/Razhiel2019/Admatrix/main/ArchivosUtilitarios/TROJAN/install_trojan.sh)"
+git clone https://github.com/trojan-gfw/trojan-manager.git &> /dev/null
+cd trojan-manager
+pip3 install -r requirements.txt #&> /dev/null
+msg -ama "$(fun_trans "Intalado con Exito")!"
+}
+
+#desintalador trojan
+unistalltrojan () {
+#source <(curl -sL https://raw.githubusercontent.com/Razhiel2019/Admatrix/main/ArchivosUtilitarios/TROJAN/install_trojan.sh) --remove
+apt-get purge trojan -y &> /dev/null
+apt-get remove trojan -y &> /dev/null
+rm -rf /usr/local/bin/trojan
+rm -rf /usr/local/bin/trojan
+rm -rf /usr/local/bin/trojan
+rm -f /etc/systemd/system/trojan-web.service &> /dev/null
+rm -rf /var/lib/trojan-manager &> /dev/null
+msg -verd "$(fun_trans "Trojan Desinstalado cin éxito")!"
+}
+
+#eliminar usuarios
+remov_user () {
+apt install python3-pip -y
+#sudo bash -c "$(wget -O- https://raw.githubusercontent.com/trojan-gfw/trojan-manager/master/trojan_manager.py)"
+cd trojan-manager
+#python3 trojan_manager.py #deluser user
+./trojan_manager.py
+}
+
+#añadir usuarios
+add_user () {
+apt install python3-pip -y 
+#sudo bash -c "$(wget -O- https://raw.githubusercontent.com/Razhiel2019/Admatrix/main/ArchivosUtilitarios/TROJAN//trojan_manager.py)"
+#python3 trojan_manager.py
+./trojan_manager.py
+}
+
+#info trojan
+infotrojan () {
+apt install python3-pip -y
+#python3 trojan_manager.py show
+./trojan_manager.py
+#sudo bash -c "$(wget -O- https://raw.githubusercontent.com/Razhiel2019/Admatrix/main/ArchivosUtilitarios/TROJAN/trojan-url.py)"
+}
+
+#Menu Trojan
+menu_trojan () {
+msg -bar2
+echo -e "\e[1;92m   TROJAN _ MENU ADMINISTRADOR \e[0m"
+msg -bar2
+echo -e "\e[2;93m(1) - INSTALAR TROJAN \e[0m"
+echo -e "\e[2;93m(2) - DESINTALAR TROJAN \e[0m"
+msg -bar2
+echo -e "\e[2;93m(3) - AÑADIR USUARIO \e[0m"
+echo -e "\e[2;93m(4) - ELIMINAR USUARIO \e[0m"
+echo -e "\e[2;93m(5) - MOSTRAR IMFORMACION \e[0m"
+echo -e "\e[2;93m(0) - SALIR DEL MENU \e[0m"
+read -p "Opción: " option
+case $option in
+1)intalltrojan;;
+2)unistalltrojan;;
+3)add_user;;
+4)remov_user;;
+5)infotrojan;;
+0)exit 0;;
+esac
+}
+#echo -e "DESINTALAR TROJAN \e[0m"
+#msg -bar2
+#echo -e "\e[2;93m(3) - AÑADIR USUARIO \e[0m"
+#echo -e "\e[2;93m(4) - ELIMINAR USUARIO \e[0m"
+#echo -e "\e[2;93m(5) - MOSTRAR IMFORMACION \e[0m"
+#echo -e "\e[2;93m(0) - SALIR DEL MENU \e[0m"
+#read -p "Opción: " option
+#case $option in
+#1)intalltrojan;;
+#2)unistalltrojan;;
+#3)add_user;;
+#4)remov_user;;
+#5)infotrojan;;
+#0)exit 0;;
+#esac
+#Ejecucion del menu
+menu_trojan
